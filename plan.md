@@ -7,86 +7,68 @@
 
 ## 1. プロジェクト概要
 * **ターゲットユーザー:** 10名程度のチーム（管理・営業・データ企画）
-* **開発コンセプト:** AIによる高速開発（Vibe Coding）、将来的なAWS移行を見据えたポータビリティの確保。
+* **開発コンセプト:** AIによる高速開発（Vibe Coding）、shadcn/ui によるプレミアムな UI/UX。
+* **多言語対応:** 日英バイリンガル対応済。
 
 ---
 
 ## 2. 技術スタック
 | 区分 | 選定技術 | 備考 |
 | :--- | :--- | :--- |
-| **Framework** | Next.js (App Router) | Vercelデプロイ、将来のDocker化も容易 |
-| **Database** | Supabase (PostgreSQL) | RLSによる行単位セキュリティを活用 |
-| **ORM** | Drizzle ORM | 軽量・SQLフレンドリー、AWS RDSへの移行が容易 |
-| **Auth** | NextAuth.js (Auth.js) | メール/パスワード認証、ドメイン制限付き |
-| **UI Library** | Tailwind CSS + shadcn/ui | クリーンなビジネス向けUI |
+| **Framework** | Next.js 16 (App Router) | Vercelデプロイ、Turbopack による高速な開発 |
+| **Database** | Supabase (PostgreSQL) | RLSによるセキュアなアクセス管理 |
+| **ORM** | Drizzle ORM | タイプセーフな DB 操作 |
+| **Auth** | NextAuth.js v4 | メール/パスワード認証、ドメイン制限付き |
+| **UI Library** | Tailwind CSS v4 + shadcn/ui | HeroUI からの完全移行により、洗練された統一デザインを実現 |
+| **i18n** | next-intl | 日英切り替え |
 
 ---
 
 ## 3. 機能要件
 
 ### 3.1 認証・セキュリティ
-* **会社ドメイン制限:** サインアップ時に `@company.co.jp`（適宜変更）以外のドメインを拒否。
-* **認可制御:** PostgreSQLのRow Level Security (RLS) を使用。認証済みユーザーのみがデータにアクセス可能。
-* **ロール管理:** ADMIN（全データ閲覧・編集）と MEMBER（自分の工数入力・案件閲覧）の権限分離。
+* **会社ドメイン制限:** 特定のドメイン以外のメールアドレスによる登録を制限。
+* **セッション管理:** NextAuth.js による堅牢な認証フロー。
+* **プロフィール管理:** ユーザー自身によるアバター（画像・色）および表示名の編集。
 
-### 3.2 プロジェクト管理（4種別）
-作成時に以下の種別を選択し、管理項目を切り替える。
-1. **SALES (販売):** 売上金額、受注確度、見積工数を管理。
-2. **ALLIANCE (協業):** 提携先、協業フェーズを管理。
-3. **PROMO (広報/展示会):** イベント名、展示用データ作成進捗。
-4. **R&D (研究開発):** 研究テーマ、論文/学会目標。
+### 3.2 案件管理（4種別）
+* **SALES (販売):** 売上金額、受注確度、見積工数を管理。カンバンボードでの運用。
+* **ALLIANCE (協業):** 案件一覧および詳細管理。
+* **PROMO (広報/展示会):** イベント・広報案件の管理。
+* **R&D (研究開発):** 技術検証・研究テーマの管理。
 
-### 3.3 進捗管理・工数見積り
-* **工数シミュレーター:** 処理規模、期間（月）、追加仕様の有無を入力し、標準工数を自動計算。
-* **ハイブリッド進捗:**
-    * **人的タスク:** 担当者、ステータス（未着手〜完了）。
-    * **システムタスク:** 処理状況（実行中、待機中、完了等）。
+### 3.3 進捗管理・視覚化
+* **販売カンバン:** ステータスごとのドラッグ＆ドロップ管理。担当者アバターの表示。
+* **ガントチャート:** タスクのスケジュール化と担当者の紐付け。
 
-### 3.5 工数入力と分析
-* **タイムシート:** 1時間単位でプロジェクトまたは共通コスト（会議等）に工数を記録。
-* **ダッシュボード:**
-    * 案件別採算（売上金額 vs 累積工数実績）。
-    * チームリソース配分（SALES / ALLIANCE / PROMO / RD の工数比率）。
+### 3.4 チーム・メンバー管理
+* **組織管理:** チームごとのメンバー編成。アバターシステム（画像のアップロード・イニシャル色選択）。
+
+### 3.5 ダッシュボードと分析
+* **全体・チーム・担当者別ビュー:** タブ切り替えにより、多角的なデータ分析が可能。
+* **目標管理:** 年間目標に対する達成率（TargetProgressRing）のリアルタイム表示。
+* **採算性モニタリング:** 売上実績 vs 累積工数グラフ（Recharts）。
 
 ---
 
-## 4. データベース設計 (Schema)
+## 4. データベース設計 (Final Schema)
 
 ### Projects テーブル
-| カラム | 型 | 備考 |
-| :--- | :--- | :--- |
-| `id` | uuid | プライマリキー |
-| `name` | text | プロジェクト名 |
-| `type` | enum | SALES, ALLIANCE, PROMO, RD |
-| `status` | text | パイプラインまたは進捗ステータス |
-| `revenue` | numeric | 売上金額（SALESのみ） |
-| `probability`| integer | 受注確度（SALESのみ） |
-| `mesh_count` | integer | 見積用：2次メッシュ数 |
-| `duration` | integer | 見積用：月数 |
+- `id`, `name`, `type`, `status`, `revenue`, `probability`, `duration`
+- `account_manager_id`: メンバーへの外部キー
 
-### Tasks テーブル (システム/人的共通)
-| カラム | 型 | 備考 |
-| :--- | :--- | :--- |
-| `id` | uuid | |
-| `project_id` | uuid | |
-| `task_type` | enum | HUMAN, SYSTEM |
-| `label` | text | 作業内容名 |
-| `status` | text | 実行中、待機中、完了等 |
+### Tasks テーブル
+- `id`, `project_id`, `task_type` (HUMAN/SYSTEM), `label`, `status`, `start_date`, `due_date`
 
-### WorkLogs テーブル
-| カラム | 型 | 備考 |
-| :--- | :--- | :--- |
-| `id` | uuid | |
-| `user_email` | text | |
-| `project_id` | uuid | NULL許可（共通コスト用） |
-| `category` | text | 大項目/小項目（共通コスト用） |
-| `hours` | integer | 実働時間（1h単位） |
-| `work_date` | date | |
+### Teams / Members テーブル
+- `teams`: `id`, `name`, `description`
+- `members`: `id`, `name`, `email`, `team_id`, `avatar_url`, `avatar_color`
 
 ---
 
-## 5. 実装ステップ
-1. **Phase 1:** Next.js + Drizzle + Supabase の土台構築と Auth 実装。
-2. **Phase 2:** 種別ごとのプロジェクト作成・一覧表示機能。
-3. **Phase 3:** 人的・サーバー別のタスク進捗および工数入力。
-4. **Phase 4:** ダッシュボード（採算性・リソース配分グラフ）の構築。
+## 5. 実装ステータス
+* [x] **Phase 1:** Next.js + Drizzle + Supabase 基盤。
+* [x] **Phase 2:** プロジェクト管理・カンバンUI。
+* [x] **Phase 3:** タスク・ガントチャート。
+* [x] **Phase 4:** チーム管理および強化されたダッシュボード。
+* [x] **UI Migration:** HeroUI から shadcn/ui への完全な移行。

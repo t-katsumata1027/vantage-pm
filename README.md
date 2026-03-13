@@ -10,10 +10,12 @@ English summary: [→ See English section below](#english)
 
 営業チームやエンジニア部門が共通のプラットフォームで案件を管理し、工数・売上・進捗を可視化することで、意思決定のスピードと精度を高めることを目的としています。
 
+- **高度なダッシュボード**: 売上目標の達成率やチーム・担当者ごとのパフォーマンスをリアルタイムに可視化
 - **案件種別に応じたビュー**: 販売案件はカンバンボードで進捗管理、工数はガントチャートで可視化
+- **チーム・メンバー管理**: 組織構造に合わせたチーム編成とアバター管理
 - **日英バイリンガル UI**: ヘッダーのスライダーで日本語 / 英語を切り替え
 - **ダーク / ライトモード**: デフォルトはダークモード、ヘッダーのトグルで切り替え可能
-- **プレミアムデザイン**: HeroUI (NextUI) の豊富なコンポーネントとカスタム 3D シャドウで高品質な見た目を実現
+- **プレミアムデザイン**: shadcn/ui (Tailwind CSS v4) をベースとした一貫性のある洗練されたデザイン
 
 ---
 
@@ -23,8 +25,8 @@ English summary: [→ See English section below](#english)
 |---|---|
 | フレームワーク | [Next.js 16](https://nextjs.org/) (App Router, Turbopack) |
 | 言語 | TypeScript 5 |
-| UI ライブラリ | [HeroUI (NextUI)](https://heroui.com/) + [shadcn/ui](https://ui.shadcn.com/) |
-| データ可視化 | [Tremor](https://tremor.so/) + [Recharts](https://recharts.org/) |
+| UI ライブラリ | [shadcn/ui](https://ui.shadcn.com/) (Radix UI) |
+| データ可視化 | [Recharts](https://recharts.org/) |
 | スタイリング | [Tailwind CSS v4](https://tailwindcss.com/) + `tw-animate-css` |
 | テーマ管理 | [next-themes](https://github.com/pacocoursey/next-themes) |
 | 国際化 (i18n) | [next-intl](https://next-intl-docs.vercel.app/) (日本語 / English) |
@@ -38,45 +40,51 @@ English summary: [→ See English section below](#english)
 
 ## 主な機能 / Features
 
+### 📊 強化されたダッシュボード (Dashboard)
+- **タブ切り替え**: 「全体」「チーム別」「担当者別」の 3 つのビューでパフォーマンスを分析
+- **目標達成リング**: 年間売上目標に対する現在の達成状況を視覚的に可視化
+- **KPI カード**: パイプライン総額、受注実績、勝率、総工数などを集約
+
 ### 📋 案件一覧 (Projects)
 - 販売 (SALES) / アライアンス (ALLIANCE) / 広報 (PROMO) / 研究開発 (RD) の 4 種別を管理
 - 売上予測・受注確度・期間を登録して一覧で俯瞰
-- 新規案件をモーダルから素早く登録（backdrop blur 付きの HeroUI Modal）
+- shadcn/ui ベースの洗練されたデータテーブルとバッジ表示
 
 ### 🗂 販売カンバンボード (Sales Kanban)
 - ドラッグ＆ドロップでステータスを移動 (`リード → 計画中 → 提案中 → 受注 / 失注`)
-- 確度（受注確率）をカラーチップで視覚的に表示
-- ダークモードでも立体感のある 3D シャドウデザイン
+- 案件ごとに担当者アバターを表示し、誰が何を持っているか一目で把握
+- 確度に応じた確率カラー表示
 
 ### 📅 タスク管理・ガントチャート (Tasks / Gantt)
 - プロジェクトに紐づくタスク（人的タスク / システムタスク）を登録
 - 開始日・期日を設定してガントチャートで進捗を視覚化
-- グラデーションのタスクバーで種別を色分け
+- 担当者のアバターをチャート上に表示
 
-### 🌐 多言語 / テーマ
-- ヘッダーの `JA / EN` スライダーで言語を即時切り替え
-- 🌙 / ☀️ ボタンでダーク / ライトモードを切り替え（デフォルト: ダーク）
+### 👥 チーム・メンバー管理
+- チームの作成・編集およびメンバーの所属管理
+- 独自のアバターシステム（画像アップロード ＆ イニシャル背景色選択）
+- ログイン中のユーザー自身によるプロフィール編集
 
 ---
 
 ## データベース設計 / Database Schema
 
 ```
-projects          tasks              work_logs
-─────────────     ─────────────      ─────────────
-id (UUID PK)      id (UUID PK)       id (UUID PK)
-name              project_id (FK)    user_email
-type              task_type          project_id (FK)
-status            label              category
-revenue           status             hours
-probability       start_date         work_date
-duration          due_date
-custom_fields (JSONB)
+projects          tasks              teams             members
+─────────────     ─────────────      ─────────────     ─────────────
+id (UUID PK)      id (UUID PK)       id (UUID PK)      id (UUID PK)
+name              project_id (FK)    name              name
+type              task_type          description       email
+status            label              ...               team_id (FK)
+revenue           status                               avatar_url
+probability       start_date                           avatar_color
+duration          due_date                             ...
+account_manager_id (FK)
 ```
 
-- `projects.custom_fields` は JSONB カラムで、ユーザーが自由に追加できる見積もり項目（メッシュ数など）を保存
-- `tasks.task_type` は `HUMAN`（人的作業）/ `SYSTEM`（自動処理）の enum
-- `work_logs` は工数タイムシート。`project_id` が NULL のものは共通費として扱う
+- **account_manager_id**: 案件の主担当者をメンバーテーブルへ紐付け
+- **custom_fields**: JSONB カラムにより、案件ごとの柔軟な見積もり項目に対応
+- **teams / members**: 組織構造を管理し、ダッシュボードでの集計単位として活用
 
 ---
 
@@ -101,7 +109,10 @@ cp .env.local.example .env.local
 ```.env.local
 # Supabase PostgreSQL
 DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+
+# Supabase Public Keys
+NEXT_PUBLIC_SUPABASE_URL=https://[PROJECT_REF].supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=ey...
 
 # NextAuth.js
 NEXTAUTH_SECRET=your-secret-key
@@ -123,9 +134,6 @@ npx drizzle-kit push
 npm run dev
 ```
 
-[http://localhost:3000](http://localhost:3000) を開くとアプリが起動します。  
-デフォルトは日本語ダークモードで表示されます。
-
 ---
 
 ## ディレクトリ構成 / Project Structure
@@ -134,34 +142,22 @@ npm run dev
 src/
 ├── app/
 │   ├── [locale]/           # i18n ルーティング (ja / en)
-│   │   ├── page.tsx        # 案件一覧ページ
-│   │   ├── sales-kanban/   # 販売カンバンページ
-│   │   ├── tasks/          # タスク管理・ガントチャートページ
-│   │   └── layout.tsx      # 共通レイアウト (HeroUIProvider, ThemeProvider)
-│   └── globals.css         # グローバルスタイル (カラーパレット, Tailwind v4)
+│   │   ├── dashboard/      # 強化されたダッシュボード
+│   │   ├── members/        # チーム・メンバー管理
+│   │   ├── profile/        # プロフィール編集
+│   │   └── layout.tsx      # 共通レイアウト (Session, Theme, i18n)
 ├── components/
-│   ├── layout/             # ヘッダー, 言語切替, テーマトグル
-│   ├── projects/           # 案件一覧, 新規作成ダイアログ, カンバンボード
-│   └── tasks/              # ガントチャート
-├── actions/                # Next.js Server Actions (DB 操作)
+│   ├── dashboard/          # 分析チャート、達成率リング
+│   ├── layout/             # ユーザーメニュー、言語切替
+│   ├── projects/           # カンバン、データテーブル
+│   ├── tasks/              # ガントチャート
+│   └── ui/                 # カスタマイズされた shadcn/ui 部品
+├── actions/                # Server Actions (タイプセーフな DB 操作)
 ├── lib/
 │   └── db/
-│       └── schema.ts       # Drizzle ORM スキーマ定義
-└── i18n/                   # next-intl 設定・翻訳ファイル
+│       └── schema.ts       # 拡張された Drizzle スキーマ
+└── messages/               # 日英の翻訳辞書ファイル
 ```
-
----
-
-## スクリプト / Scripts
-
-| コマンド | 説明 |
-|---|---|
-| `npm run dev` | 開発サーバー起動 (Turbopack) |
-| `npm run build` | 本番ビルド |
-| `npm run start` | 本番サーバー起動 |
-| `npm run lint` | ESLint による静的解析 |
-| `npx drizzle-kit push` | DB スキーマを Supabase へ反映 |
-| `npx drizzle-kit studio` | Drizzle Studio でデータ確認 |
 
 ---
 
@@ -169,26 +165,18 @@ src/
 
 ## English Summary
 
-**Vantage PM** is an in-house project management tool for tracking sales deals, alliances, promotions, and R&D projects in a single platform.
+**Vantage PM** is a high-end project management platform built for modern teams to track sales pipelines, alliances, task schedules, and operational performance in a bilingual environment.
 
 ### Key Features
-- **Project List** — Manage 4 project types (SALES, ALLIANCE, PROMO, RD) with revenue forecasts and probability
-- **Sales Kanban Board** — Drag & drop to move deals through pipeline stages (Lead → Planning → Proposal → Won/Lost)
-- **Gantt Chart** — Visualize task schedules with color-coded gradient bars
-- **Dark / Light Mode** — Defaults to dark mode; toggle via header button
-- **Bilingual UI** — Instant JA/EN switching via the header slider tab
-
-### Quick Start
-```bash
-npm install
-cp .env.local.example .env.local  # Fill in Supabase & NextAuth credentials
-npx drizzle-kit push               # Apply DB migrations
-npm run dev                        # Start dev server at http://localhost:3000
-```
+- **Enhanced Dashboard** — Tabbed views for "Overall", "Teams", and "Members" performance with target achievement visualization.
+- **Sales Kanban Board** — Visual pipeline management with deal probability and assigned owner avatars.
+- **Team & Member Management** — CRUD operations for organizational structure and a customizable avatar system.
+- **Gantt Chart** — Interactive task scheduling with assigned member integration.
+- **Universal shadcn/ui Migration** — Consistent, premium UI/UX design powered by Tailwind CSS v4.
 
 ### Tech Highlights
-- **Next.js 16** App Router with Turbopack for fast HMR
-- **HeroUI** + **Tremor** hybrid UI — rich interactive components + data visualization
-- **Drizzle ORM** + **Supabase** PostgreSQL for type-safe database access
-- **Tailwind CSS v4** with `oklch` color palette for perceptually uniform theming
-- **next-intl** for server-side i18n with locale routing (`/ja/*`, `/en/*`)
+- **Next.js 16** App Router with Turbopack.
+- **shadcn/ui** components for a high-quality interactive experience.
+- **Drizzle ORM** + **Supabase** (PostgreSQL) for a robust and type-safe data layer.
+- **next-intl** for server-side bilingual routing.
+- **Tailwind CSS v4** with `oklch` colors for perceptually uniform theming.
