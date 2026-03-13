@@ -3,7 +3,8 @@
     "projects": "案件一覧",
     "sales_kanban": "販売カンバン",
     "tasks": "タスク管理",
-    "dashboard": "ダッシュボード"
+    "dashboard": "ダッシュボード",
+    "members": "メンバー"
   },
   "Projects": {
     "title": "案件一覧",
@@ -66,5 +67,13 @@
       "no_tasks": "タスクがありません",
       "unscheduled": "未定"
     }
+  },
+  "Dashboard": {
+    "title": "売上ダッシュボード",
+    "description": "パイプライン・売上・採算性をリアルタイムで把握します。"
+  },
+  "Members": {
+    "title": "チーム・メンバー",
+    "description": "チームと担当者を管理します。各メンバーをクリックするとアバターを編集できます。"
   }
 }

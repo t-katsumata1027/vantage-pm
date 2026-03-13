@@ -59,6 +59,18 @@ export default async function RootLayout({
                         >
                           {tNav("tasks")}
                         </a>
+                        <a
+                          href={`/${locale}/dashboard`}
+                          className="flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-accent"
+                        >
+                          {tNav("dashboard")}
+                        </a>
+                        <a
+                          href={`/${locale}/members`}
+                          className="flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-accent"
+                        >
+                          {tNav("members")}
+                        </a>
                       </nav>
                     </div>
                     <div className="flex items-center space-x-2">

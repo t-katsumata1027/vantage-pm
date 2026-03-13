@@ -3,7 +3,8 @@
     "projects": "Projects",
     "sales_kanban": "Sales Kanban",
     "tasks": "Tasks",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "members": "Members"
   },
   "Projects": {
     "title": "Projects",
@@ -66,5 +67,13 @@
       "no_tasks": "No tasks found",
       "unscheduled": "Unscheduled"
     }
+  },
+  "Dashboard": {
+    "title": "Sales Dashboard",
+    "description": "Monitor pipeline, revenue, and profitability in real-time."
+  },
+  "Members": {
+    "title": "Team & Members",
+    "description": "Manage teams and assignees. Click any member card to edit their avatar."
   }
 }
