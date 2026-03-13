@@ -13,6 +13,10 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Vantage PM",
   description: "A versatile project and resource management tool.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default async function RootLayout({
@@ -36,10 +40,16 @@ export default async function RootLayout({
                   <div className="container flex h-16 items-center justify-between">
                     <div className="flex gap-6 md:gap-10">
                       <a className="flex items-center space-x-2 group" href={`/${locale}`}>
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-bold text-xs shadow-md group-hover:shadow-lg transition-all group-hover:scale-105">
-                          V
+                        <div className="relative w-8 h-8 group-hover:scale-110 transition-transform duration-300">
+                          <img 
+                            src="/logo.png" 
+                            alt="Vantage PM Logo" 
+                            className="w-full h-full object-contain filter drop-shadow-sm"
+                          />
                         </div>
-                        <span className="font-bold text-base tracking-tight">Vantage PM</span>
+                        <span className="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+                          Vantage PM
+                        </span>
                       </a>
                       <nav className="flex gap-1">
                         <a
