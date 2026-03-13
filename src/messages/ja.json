@@ -1,0 +1,36 @@
+{
+  "Navigation": {
+    "projects": "案件一覧",
+    "tasks": "タスク管理",
+    "dashboard": "ダッシュボード"
+  },
+  "Projects": {
+    "title": "案件一覧",
+    "description": "販売、協業、広報、研究開発などの案件を一元管理します。",
+    "new_project": "新規作成",
+    "no_projects": "案件がありません",
+    "get_started": "新しい案件を作成して開始してください。",
+    "table": {
+      "name": "案件名",
+      "type": "種別",
+      "status": "ステータス",
+      "revenue": "売上 / 確度",
+      "duration": "期間"
+    },
+    "form": {
+      "title": "案件の作成",
+      "description": "新しい案件をワークスペースに追加します。入力後、保存をクリックしてください。",
+      "name": "案件名",
+      "name_placeholder": "新プロジェクト Alpha",
+      "type": "案件種別",
+      "type_sales": "販売 (Sales)",
+      "type_alliance": "協業 (Alliance)",
+      "type_promo": "広報 / デモ (Promotion)",
+      "type_rd": "研究開発 (R&D)",
+      "revenue": "見込売上",
+      "probability": "受注確度 (%)",
+      "duration": "見積期間 (月)",
+      "submit": "作成する"
+    }
+  }
+}

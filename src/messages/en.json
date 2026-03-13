@@ -1,0 +1,36 @@
+{
+  "Navigation": {
+    "projects": "Projects",
+    "tasks": "Tasks",
+    "dashboard": "Dashboard"
+  },
+  "Projects": {
+    "title": "Projects",
+    "description": "Manage your sales, alliances, promotions, and R&D projects.",
+    "new_project": "New Project",
+    "no_projects": "No projects found",
+    "get_started": "Get started by creating a new project.",
+    "table": {
+      "name": "Project Name",
+      "type": "Type",
+      "status": "Status",
+      "revenue": "Revenue / Prob.",
+      "duration": "Duration"
+    },
+    "form": {
+      "title": "Create project",
+      "description": "Add a new project to your workspace. Click save when you're done.",
+      "name": "Project Name",
+      "name_placeholder": "Project Alpha",
+      "type": "Project Type",
+      "type_sales": "Sales",
+      "type_alliance": "Alliance",
+      "type_promo": "Promotion / Demo",
+      "type_rd": "R&D",
+      "revenue": "Est. Revenue",
+      "probability": "Probability (%)",
+      "duration": "Estimated Duration (Months)",
+      "submit": "Create Project"
+    }
+  }
+}
