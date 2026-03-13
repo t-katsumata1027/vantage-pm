@@ -39,6 +39,8 @@ export const tasks = pgTable('tasks', {
   taskType: text('task_type', { enum: ['HUMAN', 'SYSTEM'] }).notNull(),
   label: text('label').notNull(),
   status: text('status').notNull().default('PENDING'),
+  startDate: date('start_date'),
+  dueDate: date('due_date'),
 });
 
 // ----------------------------------------------------------------------------

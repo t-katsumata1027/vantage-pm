@@ -1,6 +1,7 @@
 {
   "Navigation": {
     "projects": "Projects",
+    "sales_kanban": "Sales Kanban",
     "tasks": "Tasks",
     "dashboard": "Dashboard"
   },
@@ -31,6 +32,39 @@
       "probability": "Probability (%)",
       "duration": "Estimated Duration (Months)",
       "submit": "Create Project"
+    }
+  },
+  "Kanban": {
+    "title": "Sales Kanban",
+    "description": "Manage the progress of Sales projects using drag and drop.",
+    "columns": {
+      "LEAD": "Lead",
+      "PLANNING": "Planning",
+      "PROPOSAL": "Proposal",
+      "WON": "Won",
+      "LOST": "Lost"
+    }
+  },
+  "Tasks": {
+    "title": "Task Management & Gantt",
+    "description": "Manage progress and schedules of tasks linked to projects.",
+    "new_task": "Add Task",
+    "form": {
+      "title": "Create Task",
+      "description": "Add a new task to a project.",
+      "project": "Project",
+      "label": "Task Name",
+      "label_placeholder": "e.g., Complete Requirements",
+      "task_type": "Task Type",
+      "type_human": "Human",
+      "type_system": "System",
+      "start_date": "Start Date",
+      "due_date": "Due Date",
+      "submit": "Create Task"
+    },
+    "gantt": {
+      "no_tasks": "No tasks found",
+      "unscheduled": "Unscheduled"
     }
   }
 }

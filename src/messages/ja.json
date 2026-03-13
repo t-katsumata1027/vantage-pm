@@ -1,6 +1,7 @@
 {
   "Navigation": {
     "projects": "案件一覧",
+    "sales_kanban": "販売カンバン",
     "tasks": "タスク管理",
     "dashboard": "ダッシュボード"
   },
@@ -31,6 +32,39 @@
       "probability": "受注確度 (%)",
       "duration": "見積期間 (月)",
       "submit": "作成する"
+    }
+  },
+  "Kanban": {
+    "title": "販売案件カンバン",
+    "description": "販売案件（SALES）の進捗をドラッグ＆ドロップで管理します。",
+    "columns": {
+      "LEAD": "リード",
+      "PLANNING": "計画中",
+      "PROPOSAL": "提案中",
+      "WON": "受注",
+      "LOST": "失注"
+    }
+  },
+  "Tasks": {
+    "title": "タスク管理・ガントチャート",
+    "description": "各プロジェクトに紐づくタスクの進捗とスケジュールを管理します。",
+    "new_task": "タスク追加",
+    "form": {
+      "title": "タスク作成",
+      "description": "プロジェクトに新しいタスクを追加します。",
+      "project": "プロジェクト",
+      "label": "タスク名",
+      "label_placeholder": "例：要件定義の完了",
+      "task_type": "担当区分",
+      "type_human": "人力",
+      "type_system": "システム",
+      "start_date": "開始日",
+      "due_date": "終了日（期日）",
+      "submit": "作成する"
+    },
+    "gantt": {
+      "no_tasks": "タスクがありません",
+      "unscheduled": "未定"
     }
   }
 }
