@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin(
 );
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@heroui/react', '@heroui/theme', 'framer-motion'],
+  // Add any other config here
 };
 
 export default withNextIntl(nextConfig);

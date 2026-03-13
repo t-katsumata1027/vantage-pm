@@ -1,12 +1,12 @@
 "use client";
 
-import { HeroUIProvider } from "@heroui/react";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SessionProvider } from "next-auth/react";
 import { ReactNode } from "react";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <HeroUIProvider>
+    <SessionProvider>
       <ThemeProvider
         attribute="class"
         defaultTheme="dark"
@@ -15,6 +15,6 @@ export function Providers({ children }: { children: ReactNode }) {
       >
         {children}
       </ThemeProvider>
-    </HeroUIProvider>
+    </SessionProvider>
   );
 }

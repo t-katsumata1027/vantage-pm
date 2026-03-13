@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import "../globals.css";
 import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { UserMenu } from '@/components/layout/user-menu';
 import { Providers } from "@/components/providers";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -73,9 +74,12 @@ export default async function RootLayout({
                         </a>
                       </nav>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-3">
                       <ThemeToggle />
                       <LanguageSwitcher />
+                      <div className="pl-1 border-l border-border/50">
+                        <UserMenu />
+                      </div>
                     </div>
                   </div>
                 </header>

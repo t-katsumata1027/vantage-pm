@@ -2,22 +2,27 @@
 
 import { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { Chip } from "@heroui/react";
+import { Badge } from "@/components/ui/badge";
 import { updateProjectStatus } from "@/actions/kanban";
 import { useTranslations } from "next-intl";
 import { MemberAvatar, AvatarGroup } from "@/components/ui/member-avatar";
 import type { ProjectWithMembers } from "@/actions/projects";
+import { BarChart2, DollarSign } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const COLUMNS = [
-  { id: "LEAD",     dot: "bg-blue-500",    badge: "primary"   as const },
-  { id: "PLANNING", dot: "bg-amber-500",   badge: "warning"   as const },
-  { id: "PROPOSAL", dot: "bg-purple-500",  badge: "secondary" as const },
-  { id: "WON",      dot: "bg-emerald-500", badge: "success"   as const },
-  { id: "LOST",     dot: "bg-red-500",     badge: "danger"    as const },
+  { id: "LEAD",     dot: "bg-blue-500",    className: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
+  { id: "PLANNING", dot: "bg-amber-500",   className: "bg-amber-500/10 text-amber-500 border-amber-500/20" },
+  { id: "PROPOSAL", dot: "bg-purple-500",  className: "bg-purple-500/10 text-purple-500 border-purple-500/20" },
+  { id: "WON",      dot: "bg-emerald-500", className: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" },
+  { id: "LOST",     dot: "bg-red-500",     className: "bg-red-500/10 text-red-500 border-red-500/20" },
 ];
 
-const PROBABILITY_COLOR: (p: number) => "success" | "warning" | "danger" = (p) =>
-  p >= 80 ? "success" : p >= 50 ? "warning" : "danger";
+const getProbabilityColor = (p: number) => {
+  if (p >= 80) return "bg-emerald-500/20 text-emerald-500 border-emerald-500/30";
+  if (p >= 50) return "bg-amber-500/20 text-amber-500 border-amber-500/30";
+  return "bg-rose-500/20 text-rose-500 border-rose-500/30";
+};
 
 export function SalesKanbanBoard({ initialProjects }: { initialProjects: ProjectWithMembers[] }) {
   const [isMounted, setIsMounted] = useState(false);
@@ -42,7 +47,7 @@ export function SalesKanbanBoard({ initialProjects }: { initialProjects: Project
   };
 
   return (
-    <div className="flex gap-4 pb-4 items-start overflow-x-auto p-2">
+    <div className="flex gap-6 pb-6 items-start overflow-x-auto p-4 snap-x">
       <DragDropContext onDragEnd={onDragEnd}>
         {COLUMNS.map((col) => {
           const colProjects = data.filter(
@@ -51,15 +56,19 @@ export function SalesKanbanBoard({ initialProjects }: { initialProjects: Project
           return (
             <div
               key={col.id}
-              className="flex flex-col w-[300px] shrink-0 rounded-2xl border border-border bg-card shadow-sm dark:shadow-[0_4px_28px_rgba(0,0,0,0.65),0_1px_0_rgba(255,255,255,0.07)_inset] overflow-hidden"
+              className="flex flex-col w-[320px] shrink-0 rounded-3xl border border-border/40 bg-muted/30 backdrop-blur-sm shadow-xl overflow-hidden snap-center"
             >
               {/* Column Header */}
-              <div className="px-4 py-3 flex items-center justify-between border-b border-border bg-muted/50">
-                <span className="flex items-center gap-2 font-semibold text-sm">
-                  <span className={`w-2.5 h-2.5 rounded-full ${col.dot}`} />
-                  {t(`columns.${col.id}`)}
-                </span>
-                <Chip size="sm" variant="flat" color={col.badge}>{colProjects.length}</Chip>
+              <div className="px-5 py-4 flex items-center justify-between border-b border-border/40 bg-muted/50">
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-3 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.1)] ${col.dot}`} />
+                  <span className="font-black text-xs uppercase tracking-widest text-foreground">
+                    {t(`columns.${col.id}`)}
+                  </span>
+                </div>
+                <Badge variant="secondary" className="rounded-full px-2.5 h-6 font-black text-[10px] bg-background/50 border-border/50">
+                  {colProjects.length}
+                </Badge>
               </div>
 
               <Droppable droppableId={col.id}>
@@ -67,9 +76,10 @@ export function SalesKanbanBoard({ initialProjects }: { initialProjects: Project
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className={`flex-1 p-3 min-h-[420px] flex flex-col gap-2.5 transition-colors ${
-                      snapshot.isDraggingOver ? "bg-primary/5" : ""
-                    }`}
+                    className={cn(
+                      "flex-1 p-4 min-h-[500px] flex flex-col gap-4 transition-all duration-300",
+                      snapshot.isDraggingOver ? "bg-primary/5 ring-2 ring-primary/20 ring-inset" : ""
+                    )}
                   >
                     {colProjects.map((project, index) => (
                       <Draggable key={project.id} draggableId={project.id} index={index}>
@@ -81,49 +91,76 @@ export function SalesKanbanBoard({ initialProjects }: { initialProjects: Project
                             style={provided.draggableProps.style}
                           >
                             <div
-                              className={`rounded-xl border p-3.5 transition-all select-none ${
+                              className={cn(
+                                "group rounded-2xl border p-4 transition-all duration-300 select-none",
                                 snapshot.isDragging
-                                  ? "bg-popover border-primary/50 shadow-2xl dark:shadow-[0_12px_40px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.1)_inset] rotate-1 scale-[1.03]"
-                                  : "bg-popover border-border hover:border-primary/40 shadow-sm dark:shadow-[0_2px_12px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.06)_inset] hover:shadow-md dark:hover:shadow-[0_4px_20px_rgba(0,0,0,0.65),0_1px_0_rgba(255,255,255,0.08)_inset] hover:-translate-y-0.5"
-                              }`}
+                                  ? "bg-card border-primary shadow-2xl scale-[1.05] -rotate-1 z-50 ring-4 ring-primary/10"
+                                  : "bg-card/80 border-border/50 hover:border-primary/40 shadow-sm hover:shadow-xl hover:-translate-y-1"
+                              )}
                             >
                               {/* Project name */}
-                              <p className="text-sm font-semibold leading-snug mb-3">{project.name}</p>
+                              <h3 className="text-sm font-black leading-snug mb-4 tracking-tight group-hover:text-primary transition-colors">
+                                {project.name}
+                              </h3>
 
                               {/* Revenue + probability */}
-                              <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm text-muted-foreground">
-                                  {project.revenue
-                                    ? `¥${Number(project.revenue).toLocaleString()}`
-                                    : "—"}
-                                </span>
+                              <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-bold">
+                                  <DollarSign className="w-3 h-3 opacity-50" />
+                                  <span>
+                                    {project.revenue
+                                      ? `¥${Number(project.revenue).toLocaleString()}`
+                                      : "—"}
+                                  </span>
+                                </div>
                                 {project.probability != null && (
-                                  <Chip size="sm" variant="flat" color={PROBABILITY_COLOR(project.probability)}>
+                                  <Badge 
+                                    variant="outline" 
+                                    className={cn(
+                                      "h-5 text-[10px] font-black rounded-full px-2 border-0 shadow-none",
+                                      getProbabilityColor(project.probability)
+                                    )}
+                                  >
                                     {project.probability}%
-                                  </Chip>
+                                  </Badge>
                                 )}
                               </div>
 
                               {/* Assignees */}
                               {(project.accountManager || project.subContacts.length > 0) && (
-                                <div className="flex items-center gap-2 pt-2.5 border-t border-border/60">
-                                  {project.accountManager && (
-                                    <div className="flex items-center gap-1.5" title={`担当: ${project.accountManager.name}`}>
+                                <div className="flex items-center justify-between pt-4 border-t border-border/30">
+                                  {project.accountManager ? (
+                                    <div className="flex items-center gap-2" title={`AM: ${project.accountManager.name}`}>
                                       <MemberAvatar
                                         name={project.accountManager.name}
                                         avatarUrl={project.accountManager.avatarUrl}
                                         avatarColor={project.accountManager.avatarColor}
-                                        size="sm"
-                                        ringColor="ring-emerald-500/30"
+                                        size="xs"
+                                        className="ring-2 ring-primary/10"
                                       />
-                                      <span className="text-xs text-muted-foreground truncate max-w-[80px]">
-                                        {project.accountManager.name}
+                                      <span className="text-[10px] font-black text-muted-foreground tracking-tighter truncate max-w-[90px] uppercase">
+                                        {project.accountManager.name.split(" ")[0]}
                                       </span>
                                     </div>
-                                  )}
+                                  ) : <div />}
+                                  
                                   {project.subContacts.length > 0 && (
-                                    <div className="ml-auto">
-                                      <AvatarGroup members={project.subContacts} max={3} size="xs" />
+                                    <div className="flex -space-x-2">
+                                      {project.subContacts.slice(0, 3).map((sub, i) => (
+                                        <MemberAvatar
+                                          key={sub.id}
+                                          name={sub.name}
+                                          avatarUrl={sub.avatarUrl}
+                                          avatarColor={sub.avatarColor}
+                                          size="xs"
+                                          className="w-5 h-5 ring-2 ring-background ring-offset-0"
+                                        />
+                                      ))}
+                                      {project.subContacts.length > 3 && (
+                                        <div className="w-5 h-5 rounded-full bg-muted border border-border flex items-center justify-center text-[8px] font-black z-10">
+                                          +{project.subContacts.length - 3}
+                                        </div>
+                                      )}
                                     </div>
                                   )}
                                 </div>

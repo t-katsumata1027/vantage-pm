@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { format, eachDayOfInterval, addDays, min, max, differenceInDays, isSameDay } from "date-fns";
+import { MemberAvatar } from "@/components/ui/member-avatar";
 import { Badge } from "@/components/ui/badge";
 
 type Project = {
@@ -17,6 +18,12 @@ type Task = {
   status: string;
   startDate: string | null;
   dueDate: string | null;
+  mainMember?: {
+    id: string;
+    name: string;
+    avatarUrl: string | null;
+    avatarColor: string;
+  } | null;
 };
 
 export function GanttChart({ tasks, projects }: { tasks: Task[], projects: Project[] }) {
@@ -64,8 +71,8 @@ export function GanttChart({ tasks, projects }: { tasks: Task[], projects: Proje
         {/* Header (Dates) */}
         <div className="flex border-b bg-muted/40 sticky top-0 z-10 w-full">
           {/* Fixed column for labels */}
-          <div className="w-64 shrink-0 border-r p-3 font-semibold text-sm flex items-center sticky left-0 bg-muted/40 z-20">
-            Project / Task
+          <div className="w-72 shrink-0 border-r p-3 font-semibold text-sm flex items-center sticky left-0 bg-muted/40 z-20">
+            Project / Task / Assignee
           </div>
           {/* Days */}
           <div className="flex flex-1" style={{ minWidth: `${numDays * 40}px` }}>
@@ -90,7 +97,7 @@ export function GanttChart({ tasks, projects }: { tasks: Task[], projects: Proje
           <div 
             className="absolute top-0 bottom-0 border-l-2 border-primary/50 z-0 pointer-events-none" 
             style={{ 
-              left: `calc(256px + ${differenceInDays(today, startDate)} * 40px + 20px)`,
+              left: `calc(288px + ${differenceInDays(today, startDate)} * 40px + 20px)`,
               display: (today >= startDate && today <= endDate) ? 'block' : 'none'
             }} 
           />
@@ -99,7 +106,7 @@ export function GanttChart({ tasks, projects }: { tasks: Task[], projects: Proje
             <div key={group.id} className="flex flex-col w-full border-b last:border-0 relative z-10">
               {/* Project Row */}
               <div className="flex w-full bg-muted/10">
-                <div className="w-64 shrink-0 border-r p-3 font-semibold text-sm sticky left-0 bg-background/95 z-10">
+                <div className="w-72 shrink-0 border-r p-3 font-semibold text-sm sticky left-0 bg-background/95 z-10">
                   {group.name}
                 </div>
                 <div className="flex-1 min-w-[${numDays * 40}px]" />
@@ -114,10 +121,20 @@ export function GanttChart({ tasks, projects }: { tasks: Task[], projects: Proje
 
                 return (
                   <div key={task.id} className="flex w-full group hover:bg-muted/30 transition-colors">
-                    <div className="w-64 shrink-0 border-r p-3 pl-6 text-sm flex items-center gap-2 sticky left-0 bg-background group-hover:bg-muted/30 z-10">
+                    <div className="w-72 shrink-0 border-r p-3 pl-6 text-sm flex items-center gap-2 sticky left-0 bg-background group-hover:bg-muted/30 z-10">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
-                      <span className="truncate">{task.label}</span>
-                      {task.status === "DONE" && <Badge variant="secondary" className="ml-auto text-[10px] w-auto h-5 px-1">Done</Badge>}
+                      <span className="truncate flex-1">{task.label}</span>
+                      {task.mainMember && (
+                        <div className="shrink-0" title={task.mainMember.name}>
+                          <MemberAvatar
+                            name={task.mainMember.name}
+                            avatarUrl={task.mainMember.avatarUrl}
+                            avatarColor={task.mainMember.avatarColor}
+                            size="xs"
+                          />
+                        </div>
+                      )}
+                      {task.status === "DONE" && <Badge variant="secondary" className="text-[10px] w-auto h-5 px-1">Done</Badge>}
                     </div>
                     
                     <div className="flex-1 relative border-b border-muted/20" style={{ minWidth: `${numDays * 40}px` }}>
@@ -131,7 +148,7 @@ export function GanttChart({ tasks, projects }: { tasks: Task[], projects: Proje
                       {/* Task Bar */}
                       {startOffsetDays >= 0 && (
                         <div 
-                          className={`absolute my-2 h-8 rounded-md shadow flex items-center px-3 text-xs font-semibold truncate cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md ${
+                          className={`absolute my-2 h-8 rounded-md shadow flex items-center gap-2 px-3 text-xs font-semibold truncate cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md ${
                             task.taskType === 'HUMAN' 
                               ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-600/20' 
                               : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-600/20'
@@ -140,9 +157,18 @@ export function GanttChart({ tasks, projects }: { tasks: Task[], projects: Proje
                             left: `${startOffsetDays * 40}px`,
                             width: `${durationDays * 40}px`,
                           }}
-                          title={`${task.label} (${format(taskStart, "MM/dd")} - ${format(taskEnd, "MM/dd")})`}
+                          title={`${task.label} (${format(taskStart, "MM/dd")} - ${format(taskEnd, "MM/dd")}) ${task.mainMember ? ' - Assigned to: ' + task.mainMember.name : ''}`}
                         >
-                          {task.label}
+                          {task.mainMember && durationDays > 1 && (
+                            <MemberAvatar
+                              name={task.mainMember.name}
+                              avatarUrl={task.mainMember.avatarUrl}
+                              avatarColor={task.mainMember.avatarColor}
+                              size="xs"
+                              className="border-white/20"
+                            />
+                          )}
+                          <span className="truncate">{task.label}</span>
                         </div>
                       )}
                     </div>
@@ -156,15 +182,25 @@ export function GanttChart({ tasks, projects }: { tasks: Task[], projects: Proje
           {tasks.filter(t => !t.startDate || !t.dueDate).length > 0 && (
              <div className="flex flex-col w-full border-b last:border-0 relative z-10">
                <div className="flex w-full bg-muted/10">
-                 <div className="w-64 shrink-0 border-r p-3 font-semibold text-sm sticky left-0 bg-background/95 z-10 text-muted-foreground">
+                 <div className="w-72 shrink-0 border-r p-3 font-semibold text-sm sticky left-0 bg-background/95 z-10 text-muted-foreground">
                    {t("gantt.unscheduled")}
                  </div>
                  <div className="flex-1 min-w-[${numDays * 40}px]" />
                </div>
                {tasks.filter(t => !t.startDate || !t.dueDate).map((task) => (
                   <div key={task.id} className="flex w-full group hover:bg-muted/30 transition-colors">
-                    <div className="w-64 shrink-0 border-r p-3 pl-6 text-sm flex items-center sticky left-0 bg-background group-hover:bg-muted/30 z-10 text-muted-foreground">
-                      <span className="truncate">{task.label}</span>
+                    <div className="w-72 shrink-0 border-r p-3 pl-6 text-sm flex items-center sticky left-0 bg-background group-hover:bg-muted/30 z-10 text-muted-foreground gap-2">
+                      <span className="truncate flex-1">{task.label}</span>
+                      {task.mainMember && (
+                        <div className="shrink-0" title={task.mainMember.name}>
+                          <MemberAvatar
+                            name={task.mainMember.name}
+                            avatarUrl={task.mainMember.avatarUrl}
+                            avatarColor={task.mainMember.avatarColor}
+                            size="xs"
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                ))}

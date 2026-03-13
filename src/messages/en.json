@@ -4,7 +4,9 @@
     "sales_kanban": "Sales Kanban",
     "tasks": "Tasks",
     "dashboard": "Dashboard",
-    "members": "Members"
+    "members": "Members",
+    "edit_profile": "Edit Profile",
+    "logout": "Logout"
   },
   "Projects": {
     "title": "Projects",

@@ -1,10 +1,11 @@
 import { getProjects } from "@/actions/projects";
+import { getMembers } from "@/actions/members";
 import { CreateProjectDialog } from "@/components/projects/create-project-dialog";
 import { ProjectList } from "@/components/projects/project-list";
 import { getTranslations } from "next-intl/server";
 
 export default async function ProjectsPage() {
-  const projects = await getProjects();
+  const [projects, members] = await Promise.all([getProjects(), getMembers()]);
   const t = await getTranslations("Projects");
 
   return (
@@ -16,7 +17,7 @@ export default async function ProjectsPage() {
             {t("description")}
           </p>
         </div>
-        <CreateProjectDialog />
+        <CreateProjectDialog members={members} />
       </div>
 
       <ProjectList projects={projects} />

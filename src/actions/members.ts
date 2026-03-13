@@ -22,6 +22,24 @@ export async function createTeam(formData: FormData) {
   revalidatePath("/[locale]/members", "page");
 }
 
+export async function updateTeam(
+  teamId: string,
+  data: { name: string; description?: string | null }
+) {
+  await db.update(teams).set(data).where(eq(teams.id, teamId));
+  revalidatePath("/[locale]/members", "page");
+}
+
+export async function deleteTeam(teamId: string) {
+  // Move members in this team to no-team before deleting
+  await db
+    .update(members)
+    .set({ teamId: null })
+    .where(eq(members.teamId, teamId));
+  await db.delete(teams).where(eq(teams.id, teamId));
+  revalidatePath("/[locale]/members", "page");
+}
+
 // ── Members ──────────────────────────────────────────────────────────────────
 export async function getMembers() {
   return db
@@ -52,6 +70,33 @@ export async function createMember(formData: FormData) {
     avatarColor,
   });
   revalidatePath("/[locale]/members", "page");
+}
+
+export async function updateMember(
+  memberId: string,
+  data: { 
+    name?: string; 
+    email?: string; 
+    teamId?: string | null;
+    avatarUrl?: string | null;
+    avatarColor?: string;
+  }
+) {
+  await db.update(members).set(data).where(eq(members.id, memberId));
+  revalidatePath("/[locale]/members", "page");
+  revalidatePath("/[locale]", "page");
+  revalidatePath("/[locale]/sales-kanban", "page");
+  revalidatePath("/[locale]/profile", "page");
+}
+
+export async function deleteMember(memberId: string) {
+  // Cascade handled by FK, but explicit for safety
+  await db.delete(projectMembers).where(eq(projectMembers.memberId, memberId));
+  await db.delete(taskMembers).where(eq(taskMembers.memberId, memberId));
+  await db.delete(members).where(eq(members.id, memberId));
+  revalidatePath("/[locale]/members", "page");
+  revalidatePath("/[locale]", "page");
+  revalidatePath("/[locale]/sales-kanban", "page");
 }
 
 export async function updateMemberAvatar(

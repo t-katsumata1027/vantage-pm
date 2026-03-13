@@ -47,28 +47,32 @@ export function AvatarPicker({
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-5">
       {/* Preview */}
       <div
-        className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] overflow-hidden cursor-pointer border-2 border-border hover:opacity-90 transition-opacity"
+        className="group relative w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] overflow-hidden cursor-pointer border-4 border-background ring-2 ring-border hover:ring-primary/50 transition-all duration-300 transform hover:scale-105"
         style={{ backgroundColor: preview ? undefined : color }}
         onClick={() => fileRef.current?.click()}
         title="クリックで画像をアップロード"
       >
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="avatar" className="w-full h-full object-cover" />
+          <img src={preview} alt="avatar" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
         ) : (
           getInitials(name || "?")
         )}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+          <span className="text-xs font-medium text-white">変更</span>
+        </div>
       </div>
 
       {/* Upload hint */}
-      <p className="text-xs text-muted-foreground text-center">
-        クリックして画像をアップロード
-        <br />
-        またはカラーを選択
-      </p>
+      <div className="text-center space-y-1">
+        <p className="text-xs font-semibold text-foreground/80">アバター設定</p>
+        <p className="text-[10px] text-muted-foreground">
+          画像アップロード、またはカラー選択
+        </p>
+      </div>
 
       {/* Hidden file input */}
       <input
@@ -80,22 +84,22 @@ export function AvatarPicker({
       />
 
       {/* Color palette */}
-      <div className="flex flex-wrap justify-center gap-2 max-w-[200px]">
+      <div className="flex flex-wrap justify-center gap-3 max-w-[240px] p-3 rounded-2xl bg-muted/30 border border-border/50">
         {AVATAR_COLORS.map((c) => (
           <button
             key={c}
             type="button"
             onClick={() => handleColorSelect(c)}
-            className={`w-7 h-7 rounded-full border-2 transition-all hover:scale-110 ${
-              color === c && !preview ? "border-foreground scale-110 shadow-md" : "border-transparent"
+            className={`w-6 h-6 rounded-full border-2 transition-all duration-200 hover:scale-125 hover:shadow-lg ${
+              color === c && !preview ? "border-foreground scale-110 ring-2 ring-ring ring-offset-2 ring-offset-background" : "border-transparent"
             }`}
             style={{ backgroundColor: c }}
             title={c}
           />
         ))}
         {/* Custom color picker */}
-        <label className="relative w-7 h-7 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary transition-colors" title="カスタムカラー">
-          <span className="text-xs text-muted-foreground">+</span>
+        <label className="relative w-6 h-6 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/10 transition-all duration-200 group/custom" title="カスタムカラー">
+          <span className="text-[10px] text-muted-foreground group-hover/custom:text-primary">+</span>
           <input
             type="color"
             className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"

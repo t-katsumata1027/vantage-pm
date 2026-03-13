@@ -1,12 +1,16 @@
 import { getProjects } from "@/actions/projects";
 import { getTasks } from "@/actions/tasks";
+import { getMembers } from "@/actions/members";
 import { CreateTaskDialog } from "@/components/tasks/create-task-dialog";
 import { GanttChart } from "@/components/tasks/gantt-chart";
 import { getTranslations } from "next-intl/server";
 
 export default async function TasksPage() {
-  const projects = await getProjects();
-  const tasks = await getTasks();
+  const [projects, tasks, members] = await Promise.all([
+    getProjects(),
+    getTasks(),
+    getMembers(),
+  ]);
   const t = await getTranslations("Tasks");
 
   return (
@@ -18,7 +22,7 @@ export default async function TasksPage() {
             {t("description")}
           </p>
         </div>
-        <CreateTaskDialog projects={projects} />
+        <CreateTaskDialog projects={projects} members={members} />
       </div>
 
       <div className="flex-1 overflow-hidden min-h-[500px]">
